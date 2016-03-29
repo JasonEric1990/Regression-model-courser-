@@ -1,0 +1,69 @@
+---
+title: "Coursera Regression model"
+author: "eric"
+date: "March 29, 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+<h2>Exploratory</h2>
+
+Because in liner regression there is a lot of assumption that depend on Gaussian distribution.So at the first ,we need to see there is highly skewed or not
+```{r}
+data("mtcars")
+library(ggplot2)
+mtcars$am=as.factor(mtcars$am)
+mtcars$am=ifelse(mtcars$am==1,"manual","automatic")
+ggplot(mtcars,aes(x=mpg,fill=am))+geom_density(bw=2)+facet_grid(am~.)+ggtitle("Distribution of am in mtcars data")
+```
+
+
+
+It seems that the variate that we are most interested in is ok.
+Next:we check the other variates.
+```{r}
+pairs(mtcars[,-9], panel = panel.smooth, main = "variates scatter plot in car", col = 3)
+```
+
+<h2>Make the models</h2>
+first see the just one variate that we are interested.
+```{r}
+lm.fit.just.one<-lm(mpg~factor(am),data=mtcars)
+summary(lm.fit.just.one)
+```
+Then use the nested models(put in the variable randomly) and other way to make model and compare it(some steps it's for convenient to save time).
+```{r}
+lm.1<-lm(mpg~factor(am)+factor(cyl)+wt,data=mtcars)
+lm.2<-lm(mpg~factor(am)+factor(cyl)+disp+hp+drat+wt+qsec,data=mtcars)
+lm.multi<-lm(mpg~factor(cyl)+disp+hp+drat+wt+qsec+factor(vs)+factor(am)+factor(gear)+factor(carb),data=mtcars)
+best_model <- step(lm.multi, direction = "both")
+anova(lm.fit.just.one,lm.1,lm.2,best_model)
+```
+It seems  the model lm.1 is most significant ,and that it means when we add wt changes most!!But after we check Rss is lm.2 best.
+Check lm.2 solely.
+```{r}
+summary(lm.2)
+```
+The model is significant,and it also verify that the most significant variate is wt.
+<h3>Residual plot</h3>
+```{r}
+par(mfrow = c(2, 2)); plot(lm.2)
+```
+We can see the model is good.
+<h2>Conclusion</h2>:
+Then we chek most significant variate and the things that we are interesting.
+```{r}
+ggplot(mtcars,aes(x=mpg,y=wt,color=am))+geom_point()+ggtitle("Scatter of wt & mpg in mtcars data by am")
+```
+
+
+It seems that can answer the question which we are interested in.
