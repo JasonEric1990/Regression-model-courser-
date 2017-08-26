@@ -1,6 +1,6 @@
 # Regression-model-coursera
 
-IN 2016 spring
+IN 2016 summer
 
 As you work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
 
